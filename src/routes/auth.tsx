@@ -55,7 +55,7 @@ function AuthPage() {
           <div className="size-10 rounded-lg bg-gradient-primary grid place-items-center glow-primary">
             <Gamepad2 className="size-6 text-primary-foreground" />
           </div>
-          <span className="font-display text-2xl font-bold text-gradient">VORTEX</span>
+          <span className="font-display text-2xl font-bold"><span className="text-gradient">CERNADAS</span> <span className="text-foreground/90">GAMES</span></span>
         </Link>
 
         <div className="bg-surface border border-border/60 rounded-2xl p-6 md:p-8">
