@@ -34,7 +34,8 @@ export function Navbar() {
               <Gamepad2 className="size-5 text-primary-foreground" />
             </div>
             <span className="font-display text-xl font-bold tracking-tight hidden sm:inline">
-              <span className="text-gradient">VORTEX</span>
+              <span className="text-gradient">CERNADAS</span>{" "}
+              <span className="text-foreground/90">GAMES</span>
             </span>
           </Link>
 

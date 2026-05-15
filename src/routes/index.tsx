@@ -48,7 +48,7 @@ function Index() {
             <Sparkles className="size-3" /> Destacado
           </span>
           <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight mb-3 text-balance">
-            {featured?.title ?? "Bienvenido a Vortex"}
+            {featured?.title ?? "Bienvenido a Cernadas Games"}
           </h1>
           <p className="text-sm md:text-base text-muted-foreground mb-5 max-w-lg line-clamp-2">
             {featured?.description ?? "Miles de juegos HTML5 y Unity WebGL listos para jugar al instante. Sin descargas."}

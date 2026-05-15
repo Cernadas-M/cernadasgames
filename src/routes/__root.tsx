@@ -72,10 +72,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vortex — Juega miles de juegos online gratis" },
+      { title: "Cernadas Games — Juega miles de juegos online gratis" },
       { name: "description", content: "Plataforma de juegos HTML5 y Unity WebGL: acción, carreras, terror, puzzle, shooter y más. Juega gratis en tu navegador." },
       { name: "theme-color", content: "#0e1118" },
-      { property: "og:title", content: "Vortex — Juegos online gratis" },
+      { property: "og:title", content: "Cernadas Games — Juegos online gratis" },
       { property: "og:description", content: "Miles de juegos directamente en tu navegador. Sin descargas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
