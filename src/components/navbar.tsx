@@ -1,0 +1,103 @@
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Search, Gamepad2, User as UserIcon, LogOut, Heart, History, Shield } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+export function Navbar() {
+  const navigate = useNavigate();
+  const search = useRouterState({ select: (r) => r.location.search as { q?: string } });
+  const [q, setQ] = useState(search.q ?? "");
+  const { user, isAdmin } = useAuth();
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    void navigate({ to: "/search", search: { q: trimmed } });
+  };
+
+  return (
+    <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/75 backdrop-blur-xl border-b border-border/60">
+      <div className="h-full px-4 lg:px-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 lg:gap-8">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="size-9 rounded-lg bg-gradient-primary grid place-items-center glow-primary transition-transform group-hover:scale-105">
+              <Gamepad2 className="size-5 text-primary-foreground" />
+            </div>
+            <span className="font-display text-xl font-bold tracking-tight hidden sm:inline">
+              <span className="text-gradient">VORTEX</span>
+            </span>
+          </Link>
+
+          <form onSubmit={onSubmit} className="relative hidden md:block">
+            <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar juegos..."
+              className="w-72 lg:w-96 h-10 pl-10 pr-4 rounded-full bg-surface border border-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-primary/40 transition-all"
+            />
+          </form>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="size-10 rounded-full bg-gradient-primary text-primary-foreground font-semibold grid place-items-center text-sm hover:scale-105 transition-transform">
+                  {(user.email ?? "U").charAt(0).toUpperCase()}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/profile"><UserIcon className="size-4 mr-2" />Mi perfil</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/favorites"><Heart className="size-4 mr-2" />Favoritos</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/history"><History className="size-4 mr-2" />Historial</Link>
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin"><Shield className="size-4 mr-2" />Panel admin</Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    void navigate({ to: "/" });
+                  }}
+                >
+                  <LogOut className="size-4 mr-2" />Cerrar sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+                <Link to="/auth">Entrar</Link>
+              </Button>
+              <Button size="sm" asChild className="bg-gradient-primary text-primary-foreground hover:opacity-90 glow-primary">
+                <Link to="/auth" search={{ mode: "signup" }}>Registrarse</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
