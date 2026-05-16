@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Flame, Sparkles, Heart, History as HistoryIcon, Gamepad2 } from "lucide-react";
+import { Home, Flame, Sparkles, Heart, History as HistoryIcon, Gamepad2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCategoryIcon } from "@/lib/categories";
@@ -46,6 +46,7 @@ export function Sidebar() {
         <NavItem to="/new" icon={Sparkles} label="Nuevos" active={pathname === "/new"} />
         <NavItem to="/favorites" icon={Heart} label="Favoritos" active={pathname === "/favorites"} />
         <NavItem to="/history" icon={HistoryIcon} label="Historial" active={pathname === "/history"} />
+        <NavItem to="/contact" icon={Mail} label="Contacto" active={pathname === "/contact"} />
       </nav>
 
       <div>
