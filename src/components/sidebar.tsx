@@ -46,6 +46,7 @@ export function Sidebar() {
         <NavItem to="/new" icon={Sparkles} label="Nuevos" active={pathname === "/new"} />
         <NavItem to="/favorites" icon={Heart} label="Favoritos" active={pathname === "/favorites"} />
         <NavItem to="/history" icon={HistoryIcon} label="Historial" active={pathname === "/history"} />
+        <NavItem to="/contact" icon={Mail} label="Contacto" active={pathname === "/contact"} />
       </nav>
 
       <div>
