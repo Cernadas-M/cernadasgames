@@ -149,6 +149,33 @@ ON CONFLICT DO NOTHING;`}
                 </div>
               </div>
               <div><Label>Tags (separados por coma)</Label><Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="multijugador, rápido, 2D" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Etiqueta destacada</Label>
+                  <Select value={form.badge_type} onValueChange={(v) => setForm({ ...form, badge_type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sin etiqueta</SelectItem>
+                      <SelectItem value="new">Nuevo</SelectItem>
+                      <SelectItem value="trending">Trending</SelectItem>
+                      <SelectItem value="update">Actualizado</SelectItem>
+                      <SelectItem value="hot">Hot</SelectItem>
+                      <SelectItem value="hoy">Hoy</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Duración (días)</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={30}
+                    value={form.badge_days}
+                    disabled={form.badge_type === "none"}
+                    onChange={(e) => setForm({ ...form, badge_days: Math.max(1, Number(e.target.value) || 3) })}
+                  />
+                </div>
+              </div>
               <div className="flex flex-wrap gap-6 pt-2">
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />Activo</label>
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />Destacado</label>
