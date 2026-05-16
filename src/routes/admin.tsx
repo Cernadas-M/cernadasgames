@@ -67,6 +67,10 @@ ON CONFLICT DO NOTHING;`}
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    const badgeType = form.badge_type === "none" ? null : form.badge_type;
+    const badgeExpires = badgeType
+      ? new Date(Date.now() + form.badge_days * 24 * 60 * 60 * 1000).toISOString()
+      : null;
     const payload = {
       slug: form.slug, title: form.title, description: form.description || null,
       thumbnail_url: form.thumbnail_url || null, banner_url: form.banner_url || null,
@@ -74,6 +78,7 @@ ON CONFLICT DO NOTHING;`}
       category_id: form.category_id || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       is_featured: form.is_featured, is_trending: form.is_trending, is_active: form.is_active,
+      badge_type: badgeType, badge_expires_at: badgeExpires,
     };
     const { error } = form.id
       ? await supabase.from("games").update(payload).eq("id", form.id)
@@ -89,6 +94,7 @@ ON CONFLICT DO NOTHING;`}
       thumbnail_url: g.thumbnail_url ?? "", banner_url: g.banner_url ?? "",
       game_url: g.game_url, game_type: g.game_type, category_id: g.category_id ?? "",
       tags: g.tags.join(", "), is_featured: g.is_featured, is_trending: g.is_trending, is_active: g.is_active,
+      badge_type: g.badge_type ?? "none", badge_days: 3,
     });
     setOpen(true);
   };
