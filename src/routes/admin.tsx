@@ -22,6 +22,7 @@ const empty = {
   id: "", slug: "", title: "", description: "", thumbnail_url: "", banner_url: "",
   game_url: "", game_type: "iframe", category_id: "", tags: "",
   is_featured: false, is_trending: false, is_active: true,
+  badge_type: "none", badge_days: 3,
 };
 
 function AdminPage() {
