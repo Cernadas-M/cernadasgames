@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Flame, Sparkles, Heart, History as HistoryIcon, Gamepad2 } from "lucide-react";
+import { Home, Flame, Sparkles, Heart, History as HistoryIcon, Gamepad2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCategoryIcon } from "@/lib/categories";
