@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Eye, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Game } from "@/lib/types";
+import { getActiveBadge } from "@/lib/badge";
 import { cn } from "@/lib/utils";
 
 function formatCount(n: number): string {
