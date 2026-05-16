@@ -14,6 +14,8 @@ export type Game = {
   is_featured: boolean;
   is_trending: boolean;
   is_active: boolean;
+  badge_type: "trending" | "new" | "update" | "hot" | "hoy" | null;
+  badge_expires_at: string | null;
   created_at: string;
   updated_at: string;
 };

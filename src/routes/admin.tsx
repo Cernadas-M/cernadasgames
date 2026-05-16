@@ -22,6 +22,7 @@ const empty = {
   id: "", slug: "", title: "", description: "", thumbnail_url: "", banner_url: "",
   game_url: "", game_type: "iframe", category_id: "", tags: "",
   is_featured: false, is_trending: false, is_active: true,
+  badge_type: "none", badge_days: 3,
 };
 
 function AdminPage() {
@@ -66,6 +67,10 @@ ON CONFLICT DO NOTHING;`}
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    const badgeType = form.badge_type === "none" ? null : form.badge_type;
+    const badgeExpires = badgeType
+      ? new Date(Date.now() + form.badge_days * 24 * 60 * 60 * 1000).toISOString()
+      : null;
     const payload = {
       slug: form.slug, title: form.title, description: form.description || null,
       thumbnail_url: form.thumbnail_url || null, banner_url: form.banner_url || null,
@@ -73,6 +78,7 @@ ON CONFLICT DO NOTHING;`}
       category_id: form.category_id || null,
       tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       is_featured: form.is_featured, is_trending: form.is_trending, is_active: form.is_active,
+      badge_type: badgeType, badge_expires_at: badgeExpires,
     };
     const { error } = form.id
       ? await supabase.from("games").update(payload).eq("id", form.id)
@@ -88,6 +94,7 @@ ON CONFLICT DO NOTHING;`}
       thumbnail_url: g.thumbnail_url ?? "", banner_url: g.banner_url ?? "",
       game_url: g.game_url, game_type: g.game_type, category_id: g.category_id ?? "",
       tags: g.tags.join(", "), is_featured: g.is_featured, is_trending: g.is_trending, is_active: g.is_active,
+      badge_type: g.badge_type ?? "none", badge_days: 3,
     });
     setOpen(true);
   };
@@ -142,6 +149,33 @@ ON CONFLICT DO NOTHING;`}
                 </div>
               </div>
               <div><Label>Tags (separados por coma)</Label><Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="multijugador, rápido, 2D" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Etiqueta destacada</Label>
+                  <Select value={form.badge_type} onValueChange={(v) => setForm({ ...form, badge_type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sin etiqueta</SelectItem>
+                      <SelectItem value="new">Nuevo</SelectItem>
+                      <SelectItem value="trending">Trending</SelectItem>
+                      <SelectItem value="update">Actualizado</SelectItem>
+                      <SelectItem value="hot">Hot</SelectItem>
+                      <SelectItem value="hoy">Hoy</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Duración (días)</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={30}
+                    value={form.badge_days}
+                    disabled={form.badge_type === "none"}
+                    onChange={(e) => setForm({ ...form, badge_days: Math.max(1, Number(e.target.value) || 3) })}
+                  />
+                </div>
+              </div>
               <div className="flex flex-wrap gap-6 pt-2">
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />Activo</label>
                 <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />Destacado</label>

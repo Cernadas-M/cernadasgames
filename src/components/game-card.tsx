@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Eye, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Game } from "@/lib/types";
+import { getActiveBadge } from "@/lib/badge";
 import { cn } from "@/lib/utils";
 
 function formatCount(n: number): string {
@@ -11,6 +12,7 @@ function formatCount(n: number): string {
 }
 
 export function GameCard({ game, size = "md" }: { game: Game; size?: "sm" | "md" | "lg" }) {
+  const badge = getActiveBadge(game);
   return (
     <Link to="/game/$slug" params={{ slug: game.slug }} className="group block">
       <motion.div
@@ -43,7 +45,12 @@ export function GameCard({ game, size = "md" }: { game: Game; size?: "sm" | "md"
           </div>
         </div>
 
-        {game.is_featured && (
+        {badge && (
+          <span className={cn("absolute top-2 left-2 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow-lg", badge.className)}>
+            {badge.label}
+          </span>
+        )}
+        {game.is_featured && !badge && (
           <span className="absolute top-2 left-2 bg-accent/90 backdrop-blur-md text-accent-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
             Destacado
           </span>
