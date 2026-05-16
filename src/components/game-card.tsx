@@ -12,6 +12,7 @@ function formatCount(n: number): string {
 }
 
 export function GameCard({ game, size = "md" }: { game: Game; size?: "sm" | "md" | "lg" }) {
+  const badge = getActiveBadge(game);
   return (
     <Link to="/game/$slug" params={{ slug: game.slug }} className="group block">
       <motion.div
