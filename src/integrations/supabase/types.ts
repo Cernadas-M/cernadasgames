@@ -122,6 +122,8 @@ export type Database = {
       }
       games: {
         Row: {
+          badge_expires_at: string | null
+          badge_type: string | null
           banner_url: string | null
           category_id: string | null
           created_at: string
@@ -141,6 +143,8 @@ export type Database = {
           views_count: number
         }
         Insert: {
+          badge_expires_at?: string | null
+          badge_type?: string | null
           banner_url?: string | null
           category_id?: string | null
           created_at?: string
@@ -160,6 +164,8 @@ export type Database = {
           views_count?: number
         }
         Update: {
+          badge_expires_at?: string | null
+          badge_type?: string | null
           banner_url?: string | null
           category_id?: string | null
           created_at?: string
