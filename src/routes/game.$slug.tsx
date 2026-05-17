@@ -91,20 +91,33 @@ function GamePage() {
         <ArrowLeft className="size-4" /> Volver
       </Link>
 
-      <div ref={containerRef} className="relative bg-black rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4">
-        {playing ? (
-          <iframe src={game.game_url} title={game.title} className="size-full" allow="autoplay; fullscreen; gamepad" allowFullScreen />
-        ) : (
-          <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
-            {game.thumbnail_url && (
-              <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
-            )}
-            <div className="relative size-20 rounded-full bg-primary text-primary-foreground grid place-items-center glow-primary group-hover:scale-110 transition-transform">
-              <Play className="size-8 fill-current ml-1" />
-            </div>
-          </button>
-        )}
-      </div>
+      {game.game_type === "download" ? (
+        <div className="relative bg-gradient-card rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4 grid place-items-center">
+          {game.thumbnail_url && (
+            <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-30" />
+          )}
+          <a href={game.game_url} download className="relative z-10">
+            <Button size="lg" className="bg-gradient-primary text-primary-foreground glow-primary">
+              <Play className="size-5 mr-2" /> Descargar juego
+            </Button>
+          </a>
+        </div>
+      ) : (
+        <div ref={containerRef} className="relative bg-black rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4">
+          {playing ? (
+            <iframe src={game.game_url} title={game.title} className="size-full" allow="autoplay; fullscreen; gamepad" allowFullScreen />
+          ) : (
+            <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
+              {game.thumbnail_url && (
+                <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
+              )}
+              <div className="relative size-20 rounded-full bg-primary text-primary-foreground grid place-items-center glow-primary group-hover:scale-110 transition-transform">
+                <Play className="size-8 fill-current ml-1" />
+              </div>
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row md:items-start gap-6 mb-10">
         <div className="flex-1 min-w-0">
