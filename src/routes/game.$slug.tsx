@@ -130,7 +130,7 @@ function GamePage() {
               {game.thumbnail_url && (
                 <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
               )}
-              <div className="relative size-20 rounded-full bg-primary text-primary-foreground grid place-items-current glow-primary group-hover:scale-110 transition-transform">
+              <div className="relative size-20 rounded-full bg-primary text-primary-foreground grid place-items-center glow-primary group-hover:scale-110 transition-transform">
                 <Play className="size-8 fill-current ml-1" />
               </div>
             </button>
