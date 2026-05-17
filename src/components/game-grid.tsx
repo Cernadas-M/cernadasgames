@@ -18,7 +18,7 @@ export function GameGrid({ games, dense }: { games: Game[]; dense?: boolean }) {
       }
     >
       {games.map((g) => (
-        <GameCard key={g.id} game={g} size={dense ? "sm" : "md"} />
+        <GameCard key={g.id} game={g} />
       ))}
     </div>
   );

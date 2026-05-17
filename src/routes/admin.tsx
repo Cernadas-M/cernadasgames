@@ -126,7 +126,29 @@ ON CONFLICT DO NOTHING;`}
                 <div><Label>URL miniatura</Label><Input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} /></div>
                 <div><Label>URL banner</Label><Input value={form.banner_url} onChange={(e) => setForm({ ...form, banner_url: e.target.value })} /></div>
               </div>
-              <div><Label>URL del juego (iframe / Unity WebGL) *</Label><Input required value={form.game_url} onChange={(e) => setForm({ ...form, game_url: e.target.value })} /></div>
+              <div>
+                <Label>URL del juego (iframe / Unity WebGL / descarga) *</Label>
+                <Input required value={form.game_url} onChange={(e) => setForm({ ...form, game_url: e.target.value })} placeholder="https://... o súbelo abajo" />
+                <div className="mt-2 flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept=".html,.htm,.zip,.exe,.apk,.unity3d,application/octet-stream"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+                      const path = `${form.slug || crypto.randomUUID()}/${Date.now()}.${ext}`;
+                      const up = await supabase.storage.from("games").upload(path, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+                      if (up.error) return toast.error(up.error.message);
+                      const { data: pub } = supabase.storage.from("games").getPublicUrl(path);
+                      const isExe = ext === "exe";
+                      setForm((f) => ({ ...f, game_url: pub.publicUrl, game_type: isExe ? "download" : f.game_type }));
+                      toast.success(isExe ? "Archivo .exe subido (tipo: descarga)" : "Archivo subido");
+                    }}
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1">Acepta HTML, ZIP, .exe, .apk. Los .exe se ofrecerán como descarga.</p>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>Tipo</Label>
@@ -135,6 +157,7 @@ ON CONFLICT DO NOTHING;`}
                     <SelectContent>
                       <SelectItem value="iframe">HTML5 / iframe</SelectItem>
                       <SelectItem value="unity">Unity WebGL</SelectItem>
+                      <SelectItem value="download">Descarga (.exe / .apk)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
