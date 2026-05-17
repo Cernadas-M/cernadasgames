@@ -15,7 +15,7 @@ export const Route = createFileRoute("/game/$slug")({
 
 function GamePage() {
   const { slug } = Route.useParams();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [game, setGame] = useState<Game | null>(null);
   const [related, setRelated] = useState<Game[]>([]);
   const [playing, setPlaying] = useState(false);
@@ -110,7 +110,7 @@ function GamePage() {
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">{game.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-            {useAuth().isAdmin && (
+            {isAdmin && (
               <span className="flex items-center gap-1.5"><Eye className="size-4" /> {game.views_count.toLocaleString()} vistas</span>
             )}
             <span className="flex items-center gap-1.5"><Heart className="size-4" /> {game.likes_count.toLocaleString()} likes</span>
