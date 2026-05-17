@@ -110,7 +110,9 @@ function GamePage() {
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">{game.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
-            <span className="flex items-center gap-1.5"><Eye className="size-4" /> {game.views_count.toLocaleString()} vistas</span>
+            {useAuth().isAdmin && (
+              <span className="flex items-center gap-1.5"><Eye className="size-4" /> {game.views_count.toLocaleString()} vistas</span>
+            )}
             <span className="flex items-center gap-1.5"><Heart className="size-4" /> {game.likes_count.toLocaleString()} likes</span>
           </div>
           {game.description && <p className="text-sm text-muted-foreground leading-relaxed">{game.description}</p>}
