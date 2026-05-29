@@ -91,52 +91,26 @@ function GamePage() {
         <ArrowLeft className="size-4" /> Volver
       </Link>
 
-      {game.game_type === "download" ? (
-        <div className="relative bg-black rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4">
-          <button
-            onClick={() => {
-              const a = document.createElement("a");
-              a.href = game.game_url;
-              a.download = "";
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              setPlaying(true);
-            }}
-            className="absolute inset-0 group grid place-items-center"
-          >
+      <div ref={containerRef} className="relative bg-black rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4">
+        {playing ? (
+          <iframe
+            src={game.game_url}
+            title={game.title}
+            className="size-full"
+            allow="autoplay; fullscreen; gamepad; cross-origin-isolated"
+            allowFullScreen
+          />
+        ) : (
+          <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
             {game.thumbnail_url && (
               <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
             )}
-            <div className="relative z-10 size-20 rounded-full bg-primary text-primary-foreground grid place-items-center glow-primary group-hover:scale-110 transition-transform">
+            <div className="relative size-20 rounded-full bg-primary text-primary-foreground grid place-items-center glow-primary group-hover:scale-110 transition-transform">
               <Play className="size-8 fill-current ml-1" />
             </div>
           </button>
-          {playing && (
-            <div className="absolute inset-x-0 bottom-0 z-20 bg-background/90 backdrop-blur-md border-t border-border/60 p-4 text-sm">
-              <p className="font-semibold mb-1">Descarga iniciada</p>
-              <p className="text-muted-foreground text-xs">
-                Los juegos <code className="px-1 rounded bg-surface">.exe</code> no se pueden ejecutar dentro del navegador. Abre el archivo descargado desde tu ordenador (carpeta <em>Descargas</em>) para jugarlo.
-              </p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div ref={containerRef} className="relative bg-black rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4">
-          {playing ? (
-            <iframe src={game.game_url} title={game.title} className="size-full" allow="autoplay; fullscreen; gamepad" allowFullScreen />
-          ) : (
-            <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
-              {game.thumbnail_url && (
-                <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
-              )}
-              <div className="relative size-20 rounded-full bg-primary text-primary-foreground grid place-items-center glow-primary group-hover:scale-110 transition-transform">
-                <Play className="size-8 fill-current ml-1" />
-              </div>
-            </button>
-          )}
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="flex flex-col md:flex-row md:items-start gap-6 mb-10">
         <div className="flex-1 min-w-0">
