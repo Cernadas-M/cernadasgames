@@ -159,7 +159,6 @@ ON CONFLICT DO NOTHING;`}
                     <SelectContent>
                       <SelectItem value="iframe">HTML5 / iframe</SelectItem>
                       <SelectItem value="unity">Unity WebGL</SelectItem>
-                      <SelectItem value="download">Descarga (.exe / .apk)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
