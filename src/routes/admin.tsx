@@ -132,24 +132,30 @@ ON CONFLICT DO NOTHING;`}
                 <div className="mt-2 flex items-center gap-2">
                   <Input
                     type="file"
-                    accept=".html,.htm,.zip"
+                    accept=".html,.htm"
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
                       const ext = file.name.split(".").pop()?.toLowerCase() ?? "html";
-                      if (!["html", "htm", "zip"].includes(ext)) {
-                        return toast.error("Solo se permiten juegos HTML5/WebGL (.html, .htm, .zip)");
+                      if (!["html", "htm"].includes(ext)) {
+                        return toast.error("Sube un .html o .htm con el juego HTML5 completo (CSS/JS inline o recursos vía URL absoluta).");
                       }
-                      const path = `${form.slug || crypto.randomUUID()}/${Date.now()}.${ext}`;
-                      const up = await supabase.storage.from("games").upload(path, file, { upsert: true, contentType: file.type || "text/html" });
+                      const slugBase = (form.slug || file.name.replace(/\.[^.]+$/, ""))
+                        .toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "") || crypto.randomUUID();
+                      const path = `${slugBase}/${Date.now()}.html`;
+                      const up = await supabase.storage.from("games").upload(path, file, {
+                        upsert: true,
+                        contentType: "text/html; charset=utf-8",
+                        cacheControl: "3600",
+                      });
                       if (up.error) return toast.error(up.error.message);
                       const { data: pub } = supabase.storage.from("games").getPublicUrl(path);
-                      setForm((f) => ({ ...f, game_url: pub.publicUrl }));
-                      toast.success("Archivo subido");
+                      setForm((f) => ({ ...f, game_url: pub.publicUrl, game_type: "iframe" }));
+                      toast.success("HTML subido y vinculado al juego");
                     }}
                   />
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">Solo juegos jugables en el navegador: HTML5, Unity WebGL o iframe público (itch.io, GameDistribution, Vercel, Cloudflare Pages). No se admiten ejecutables ni descargas.</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Sube un .html con tu juego HTML5 completo (recursos en CDN o URL absoluta) o pega una URL pública (itch.io, GameDistribution, Vercel, Cloudflare Pages). Se ejecuta embebido, sin descargas.</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
