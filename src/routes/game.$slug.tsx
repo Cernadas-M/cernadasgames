@@ -95,15 +95,36 @@ function GamePage() {
 
       <div ref={containerRef} className="relative bg-black rounded-2xl overflow-hidden border border-border/60 aspect-video mb-4">
         {playing ? (
-          <iframe
-            src={game.game_url}
-            title={game.title}
-            className="size-full"
-            allow="autoplay; fullscreen; gamepad; cross-origin-isolated"
-            allowFullScreen
-          />
+          <>
+            <iframe
+              src={game.game_url}
+              title={game.title}
+              className="size-full"
+              allow="autoplay; fullscreen; gamepad; cross-origin-isolated; accelerometer; gyroscope; microphone; camera; clipboard-write"
+              allowFullScreen
+              onLoad={() => setIframeLoading(false)}
+              onError={() => { setIframeLoading(false); setIframeError(true); }}
+            />
+            {iframeLoading && !iframeError && (
+              <div className="absolute inset-0 grid place-items-center bg-black/80 pointer-events-none">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="size-12 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+                  <p className="text-sm text-muted-foreground">Cargando juego…</p>
+                </div>
+              </div>
+            )}
+            {iframeError && (
+              <div className="absolute inset-0 grid place-items-center bg-black/90 p-6 text-center">
+                <div className="max-w-sm">
+                  <p className="text-base font-semibold mb-2">No se pudo cargar el juego</p>
+                  <p className="text-sm text-muted-foreground mb-4">Comprueba tu conexión o inténtalo de nuevo.</p>
+                  <Button onClick={() => { setIframeError(false); setIframeLoading(true); }} variant="outline" size="sm">Reintentar</Button>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
-          <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
+          <button onClick={() => { setPlaying(true); setIframeLoading(true); setIframeError(false); }} className="absolute inset-0 group grid place-items-center">
             {game.thumbnail_url && (
               <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
             )}
