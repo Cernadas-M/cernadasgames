@@ -17,6 +17,32 @@ export function Navbar() {
   const search = useRouterState({ select: (r) => r.location.search as { q?: string } });
   const [q, setQ] = useState(search.q ?? "");
   const { user, isAdmin } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) { setAvatarUrl(null); return; }
+    let cancelled = false;
+    const load = () => {
+      void supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle().then(({ data }) => {
+        if (!cancelled) setAvatarUrl(data?.avatar_url ?? null);
+      });
+    };
+    load();
+    const channel = supabase
+      .channel(`profile-${user.id}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` }, (payload) => {
+        const next = (payload.new as { avatar_url?: string | null }).avatar_url ?? null;
+        setAvatarUrl(next);
+      })
+      .subscribe();
+    const onUpdated = () => load();
+    window.addEventListener("profile:updated", onUpdated);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("profile:updated", onUpdated);
+      void supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
