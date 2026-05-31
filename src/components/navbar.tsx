@@ -80,8 +80,12 @@ export function Navbar() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="size-10 rounded-full bg-gradient-primary text-primary-foreground font-semibold grid place-items-center text-sm hover:scale-105 transition-transform">
-                  {(user.email ?? "U").charAt(0).toUpperCase()}
+                <button className="size-10 rounded-full bg-gradient-primary text-primary-foreground font-semibold grid place-items-center text-sm hover:scale-105 transition-transform overflow-hidden">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="avatar" className="size-full object-cover" />
+                  ) : (
+                    (user.email ?? "U").charAt(0).toUpperCase()
+                  )}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
