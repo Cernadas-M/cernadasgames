@@ -30,7 +30,8 @@ function ProfilePage() {
   const save = async () => {
     if (!user) return;
     const { error } = await supabase.from("profiles").update({ display_name: name, avatar_url: avatar }).eq("id", user.id);
-    if (error) toast.error(error.message); else toast.success("Perfil actualizado");
+    if (error) toast.error(error.message);
+    else { toast.success("Perfil actualizado"); window.dispatchEvent(new Event("profile:updated")); }
   };
 
   const onFile = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +49,7 @@ function ProfilePage() {
     const { data } = supabase.storage.from("avatars").getPublicUrl(path);
     setAvatar(data.publicUrl);
     await supabase.from("profiles").update({ avatar_url: data.publicUrl }).eq("id", user.id);
+    window.dispatchEvent(new Event("profile:updated"));
     toast.success("Foto actualizada");
     setUploading(false);
   };

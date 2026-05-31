@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Search, Gamepad2, User as UserIcon, LogOut, Heart, History, Shield } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,32 @@ export function Navbar() {
   const search = useRouterState({ select: (r) => r.location.search as { q?: string } });
   const [q, setQ] = useState(search.q ?? "");
   const { user, isAdmin } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) { setAvatarUrl(null); return; }
+    let cancelled = false;
+    const load = () => {
+      void supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle().then(({ data }) => {
+        if (!cancelled) setAvatarUrl(data?.avatar_url ?? null);
+      });
+    };
+    load();
+    const channel = supabase
+      .channel(`profile-${user.id}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` }, (payload) => {
+        const next = (payload.new as { avatar_url?: string | null }).avatar_url ?? null;
+        setAvatarUrl(next);
+      })
+      .subscribe();
+    const onUpdated = () => load();
+    window.addEventListener("profile:updated", onUpdated);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("profile:updated", onUpdated);
+      void supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -54,8 +80,12 @@ export function Navbar() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="size-10 rounded-full bg-gradient-primary text-primary-foreground font-semibold grid place-items-center text-sm hover:scale-105 transition-transform">
-                  {(user.email ?? "U").charAt(0).toUpperCase()}
+                <button className="size-10 rounded-full bg-gradient-primary text-primary-foreground font-semibold grid place-items-center text-sm hover:scale-105 transition-transform overflow-hidden">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="avatar" className="size-full object-cover" />
+                  ) : (
+                    (user.email ?? "U").charAt(0).toUpperCase()
+                  )}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
