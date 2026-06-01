@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Search, Gamepad2, User as UserIcon, LogOut, Heart, History, Shield } from "lucide-react";
+import { Search, Gamepad2, User as UserIcon, LogOut, Bookmark, History, Shield } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
