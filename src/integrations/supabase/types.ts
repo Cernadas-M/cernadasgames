@@ -196,18 +196,21 @@ export type Database = {
       }
       play_history: {
         Row: {
+          ended_at: string | null
           game_id: string
           id: string
           played_at: string
           user_id: string
         }
         Insert: {
+          ended_at?: string | null
           game_id: string
           id?: string
           played_at?: string
           user_id: string
         }
         Update: {
+          ended_at?: string | null
           game_id?: string
           id?: string
           played_at?: string
