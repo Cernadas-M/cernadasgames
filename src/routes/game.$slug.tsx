@@ -40,7 +40,6 @@ function GamePage() {
       setRelated((rel ?? []) as Game[]);
 
       if (user) {
-        void supabase.from("play_history").insert({ user_id: user.id, game_id: g.id });
         const [{ data: l }, { data: fv }] = await Promise.all([
           supabase.from("game_likes").select("game_id").eq("user_id", user.id).eq("game_id", g.id).maybeSingle(),
           supabase.from("favorites").select("game_id").eq("user_id", user.id).eq("game_id", g.id).maybeSingle(),
@@ -50,6 +49,16 @@ function GamePage() {
       }
     })();
   }, [slug, user]);
+
+  const startPlay = async () => {
+    setPlaying(true);
+    if (user && game) {
+      const { error } = await supabase
+        .from("play_history")
+        .insert({ user_id: user.id, game_id: game.id });
+      if (error) console.error("play_history insert error", error);
+    }
+  };
 
   const toggleLike = async () => {
     if (!user || !game) return toast.error("Inicia sesión para dar like");
@@ -101,7 +110,7 @@ function GamePage() {
             allowFullScreen
           />
         ) : (
-          <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
+          <button onClick={startPlay} className="absolute inset-0 group grid place-items-center">
             {game.thumbnail_url && (
               <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
             )}
