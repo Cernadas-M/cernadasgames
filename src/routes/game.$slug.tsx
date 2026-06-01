@@ -54,12 +54,36 @@ function GamePage() {
   const startPlay = async () => {
     setPlaying(true);
     if (user && game) {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("play_history")
-        .insert({ user_id: user.id, game_id: game.id });
-      if (error) console.error("play_history insert error", error);
+        .insert({ user_id: user.id, game_id: game.id })
+        .select("id")
+        .single();
+      if (error) {
+        console.error("play_history insert error", error);
+      } else if (data) {
+        setPlayHistoryId(data.id);
+      }
     }
   };
+
+  useEffect(() => {
+    if (!playHistoryId) return;
+    const markEnded = async () => {
+      await supabase
+        .from("play_history")
+        .update({ ended_at: new Date().toISOString() })
+        .eq("id", playHistoryId);
+    };
+    const onBeforeUnload = () => {
+      void markEnded();
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      void markEnded();
+    };
+  }, [playHistoryId]);
 
   const toggleLike = async () => {
     if (!user || !game) return toast.error("Inicia sesión para dar like");
