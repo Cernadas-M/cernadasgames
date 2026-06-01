@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Search, Gamepad2, User as UserIcon, LogOut, Heart, History, Shield } from "lucide-react";
+import { Search, Gamepad2, User as UserIcon, LogOut, Bookmark, History, Shield } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -93,7 +93,7 @@ export function Navbar() {
                   <Link to="/profile"><UserIcon className="size-4 mr-2" />Mi perfil</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/favorites"><Heart className="size-4 mr-2" />Favoritos</Link>
+                  <Link to="/favorites"><Bookmark className="size-4 mr-2" />Guardados</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/history"><History className="size-4 mr-2" />Historial</Link>

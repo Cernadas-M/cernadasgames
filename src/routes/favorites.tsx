@@ -26,7 +26,7 @@ function FavoritesPage() {
 
   return (
     <AppLayout>
-      <SectionHeader title="Mis favoritos" />
+      <SectionHeader title="Guardados" />
       {!user && !loading ? (
         <div className="py-12 text-center">
           <p className="text-muted-foreground mb-4">Inicia sesión para ver tus favoritos.</p>
