@@ -110,7 +110,7 @@ function GamePage() {
             allowFullScreen
           />
         ) : (
-          <button onClick={() => setPlaying(true)} className="absolute inset-0 group grid place-items-center">
+          <button onClick={startPlay} className="absolute inset-0 group grid place-items-center">
             {game.thumbnail_url && (
               <img src={game.thumbnail_url} alt={game.title} className="absolute inset-0 size-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
             )}
