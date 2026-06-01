@@ -1,0 +1,1 @@
+ALTER TABLE public.play_history ADD COLUMN ended_at TIMESTAMP WITH TIME ZONE;
