@@ -93,7 +93,7 @@ export function Navbar() {
                   <Link to="/profile"><UserIcon className="size-4 mr-2" />Mi perfil</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/favorites"><Heart className="size-4 mr-2" />Favoritos</Link>
+                  <Link to="/favorites"><Bookmark className="size-4 mr-2" />Guardados</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/history"><History className="size-4 mr-2" />Historial</Link>

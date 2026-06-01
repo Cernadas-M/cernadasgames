@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Heart, Eye, Maximize, Play, ArrowLeft } from "lucide-react";
+import { Heart, Bookmark, Eye, Maximize, Play, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/app-layout";
@@ -63,15 +63,15 @@ function GamePage() {
   };
 
   const toggleFav = async () => {
-    if (!user || !game) return toast.error("Inicia sesión para guardar favoritos");
+    if (!user || !game) return toast.error("Inicia sesión para guardar");
     if (favorited) {
       await supabase.from("favorites").delete().eq("user_id", user.id).eq("game_id", game.id);
       setFavorited(false);
-      toast.success("Eliminado de favoritos");
+      toast.success("Eliminado de guardados");
     } else {
       await supabase.from("favorites").insert({ user_id: user.id, game_id: game.id });
       setFavorited(true);
-      toast.success("Añadido a favoritos");
+      toast.success("Añadido a guardados");
     }
   };
 
@@ -137,7 +137,7 @@ function GamePage() {
             <Heart className={`size-4 mr-1 ${liked ? "fill-current" : ""}`} />Like
           </Button>
           <Button onClick={toggleFav} variant={favorited ? "default" : "outline"} size="sm" className={favorited ? "bg-accent" : ""}>
-            <Heart className={`size-4 mr-1 ${favorited ? "fill-current" : ""}`} />Favorito
+            <Bookmark className={`size-4 mr-1 ${favorited ? "fill-current" : ""}`} />Guardar
           </Button>
           <Button onClick={goFullscreen} variant="outline" size="sm">
             <Maximize className="size-4 mr-1" />Pantalla completa
