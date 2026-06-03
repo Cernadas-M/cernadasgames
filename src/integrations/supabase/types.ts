@@ -253,6 +253,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          id: number
+          logo_size: number
+          logo_url: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          logo_size?: number
+          logo_url: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          logo_size?: number
+          logo_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
