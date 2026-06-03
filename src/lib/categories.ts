@@ -7,6 +7,9 @@ import {
   Users,
   Footprints,
   Tent,
+  Globe,
+  Brain,
+  MoreHorizontal,
   Gamepad2,
   type LucideIcon,
 } from "lucide-react";
@@ -20,6 +23,9 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   Users,
   Footprints,
   Tent,
+  Globe,
+  Brain,
+  MoreHorizontal,
 };
 
 export function getCategoryIcon(name?: string | null): LucideIcon {
