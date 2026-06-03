@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Search, Gamepad2, User as UserIcon, LogOut, Bookmark, History, Shield } from "lucide-react";
+import { Search, User as UserIcon, LogOut, Bookmark, History, Shield } from "lucide-react";
+import logoAsset from "@/assets/logo.png.asset.json";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,9 +57,12 @@ export function Navbar() {
       <div className="h-full px-4 lg:px-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 lg:gap-8">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="size-9 rounded-lg bg-gradient-primary grid place-items-center glow-primary transition-transform group-hover:scale-105">
-              <Gamepad2 className="size-5 text-primary-foreground" />
-            </div>
+            <img
+              src={logoAsset.url}
+              alt="Cernadas Games"
+              className="size-9 rounded-full object-cover transition-transform group-hover:scale-105"
+            />
+
             <span className="font-display text-xl font-bold tracking-tight hidden sm:inline">
               <span className="text-gradient">CERNADAS</span>{" "}
               <span className="text-foreground/90">GAMES</span>
