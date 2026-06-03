@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { ThemeProvider } from "@/hooks/use-theme";
+import logoAsset from "@/assets/logo.png.asset.json";
 
 import appCss from "../styles.css?url";
 
@@ -82,10 +83,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Cernadas Games — Juega miles de juegos online gratis" },
       { name: "twitter:description", content: "Plataforma de juegos HTML5 y Unity WebGL: acción, carreras, terror, puzzle, shooter y más. Juega gratis en tu navegador." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/98d3fff0-7746-4d33-bb19-06bbcb2aec21/id-preview-633b3d84--8cfd0ddc-3000-4da8-99cf-a89b670de8cf.lovable.app-1780056437233.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/98d3fff0-7746-4d33-bb19-06bbcb2aec21/id-preview-633b3d84--8cfd0ddc-3000-4da8-99cf-a89b670de8cf.lovable.app-1780056437233.png" },
+      { property: "og:image", content: logoAsset.url },
+      { name: "twitter:image", content: logoAsset.url },
     ],
     links: [
+      { rel: "icon", type: "image/png", href: logoAsset.url },
+      { rel: "apple-touch-icon", href: logoAsset.url },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
