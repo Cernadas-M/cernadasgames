@@ -18,6 +18,7 @@ export function Navbar() {
   const search = useRouterState({ select: (r) => r.location.search as { q?: string } });
   const [q, setQ] = useState(search.q ?? "");
   const { user, isAdmin } = useAuth();
+  const siteSettings = useSiteSettings();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
