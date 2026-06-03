@@ -13,8 +13,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import type { Category, Game } from "@/lib/types";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -108,117 +110,207 @@ ON CONFLICT DO NOTHING;`}
 
   return (
     <AppLayout>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-display font-bold">Panel de administración</h1>
-        <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setForm(empty); }}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-primary text-primary-foreground"><Plus className="size-4 mr-1" />Nuevo juego</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader><DialogTitle>{form.id ? "Editar juego" : "Nuevo juego"}</DialogTitle></DialogHeader>
-            <form onSubmit={submit} className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>Título *</Label><Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-                <div><Label>Slug *</Label><Input required value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="mi-juego" /></div>
-              </div>
-              <div><Label>Descripción</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label>URL miniatura</Label><Input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} /></div>
-                <div><Label>URL banner</Label><Input value={form.banner_url} onChange={(e) => setForm({ ...form, banner_url: e.target.value })} /></div>
-              </div>
-              <div>
-                <Label>URL del juego (HTML5 / Unity WebGL / iframe público) *</Label>
-                <Input required value={form.game_url} onChange={(e) => setForm({ ...form, game_url: e.target.value })} placeholder="https://itch.io/... · https://*.vercel.app · https://*.pages.dev · https://html5.gamedistribution.com/..." />
-                <p className="text-[11px] text-muted-foreground mt-1">Pega una URL pública del juego (itch.io, GameDistribution, Vercel, Cloudflare Pages). Se ejecuta embebido, sin descargas.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Tipo</Label>
-                  <Select value={form.game_type} onValueChange={(v) => setForm({ ...form, game_type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="iframe">HTML5 / iframe</SelectItem>
-                      <SelectItem value="unity">Unity WebGL</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Categoría</Label>
-                  <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecciona..." /></SelectTrigger>
-                    <SelectContent>
-                      {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div><Label>Tags (separados por coma)</Label><Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="multijugador, rápido, 2D" /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Etiqueta destacada</Label>
-                  <Select value={form.badge_type} onValueChange={(v) => setForm({ ...form, badge_type: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Sin etiqueta</SelectItem>
-                      <SelectItem value="new">Nuevo</SelectItem>
-                      <SelectItem value="trending">Trending</SelectItem>
-                      <SelectItem value="update">Actualizado</SelectItem>
-                      <SelectItem value="hot">Hot</SelectItem>
-                      <SelectItem value="hoy">Hoy</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Duración (días)</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    max={30}
-                    value={form.badge_days}
-                    disabled={form.badge_type === "none"}
-                    onChange={(e) => setForm({ ...form, badge_days: Math.max(1, Number(e.target.value) || 3) })}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-6 pt-2">
-                <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />Activo</label>
-                <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />Destacado</label>
-                <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_trending} onCheckedChange={(v) => setForm({ ...form, is_trending: v })} />Trending</label>
-              </div>
-              <Button type="submit" className="w-full bg-gradient-primary text-primary-foreground">{form.id ? "Guardar cambios" : "Crear juego"}</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <h1 className="text-2xl font-display font-bold mb-6">Panel de administración</h1>
+      <Tabs defaultValue="games" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="games">Juegos</TabsTrigger>
+          <TabsTrigger value="logo">Logo</TabsTrigger>
+        </TabsList>
 
-      <div className="rounded-xl border border-border/60 bg-surface overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-surface-elevated text-xs uppercase tracking-wider text-muted-foreground">
-            <tr><th className="text-left p-3">Título</th><th className="text-left p-3 hidden md:table-cell">Slug</th><th className="text-left p-3 hidden lg:table-cell">Vistas</th><th className="text-left p-3">Estado</th><th className="p-3"></th></tr>
-          </thead>
-          <tbody>
-            {games.map((g) => (
-              <tr key={g.id} className="border-t border-border/60">
-                <td className="p-3 font-medium">{g.title}</td>
-                <td className="p-3 hidden md:table-cell text-muted-foreground">{g.slug}</td>
-                <td className="p-3 hidden lg:table-cell text-muted-foreground">{g.views_count}</td>
-                <td className="p-3">
-                  <span className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-bold ${g.is_active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
-                    {g.is_active ? "Activo" : "Inactivo"}
-                  </span>
-                </td>
-                <td className="p-3 text-right">
-                  <Button variant="ghost" size="icon" onClick={() => edit(g)}><Pencil className="size-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => remove(g.id)}><Trash2 className="size-4 text-destructive" /></Button>
-                </td>
-              </tr>
-            ))}
-            {games.length === 0 && (
-              <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">Aún no hay juegos. Crea el primero.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+        <TabsContent value="games">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-muted-foreground">{games.length} juego(s) en total</p>
+            <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setForm(empty); }}>
+              <DialogTrigger asChild>
+                <Button className="bg-gradient-primary text-primary-foreground"><Plus className="size-4 mr-1" />Nuevo juego</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>{form.id ? "Editar juego" : "Nuevo juego"}</DialogTitle></DialogHeader>
+                <form onSubmit={submit} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>Título *</Label><Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+                    <div><Label>Slug *</Label><Input required value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="mi-juego" /></div>
+                  </div>
+                  <div><Label>Descripción</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><Label>URL miniatura</Label><Input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} /></div>
+                    <div><Label>URL banner</Label><Input value={form.banner_url} onChange={(e) => setForm({ ...form, banner_url: e.target.value })} /></div>
+                  </div>
+                  <div>
+                    <Label>URL del juego (HTML5 / Unity WebGL / iframe público) *</Label>
+                    <Input required value={form.game_url} onChange={(e) => setForm({ ...form, game_url: e.target.value })} placeholder="https://itch.io/... · https://*.vercel.app · https://*.pages.dev · https://html5.gamedistribution.com/..." />
+                    <p className="text-[11px] text-muted-foreground mt-1">Pega una URL pública del juego (itch.io, GameDistribution, Vercel, Cloudflare Pages). Se ejecuta embebido, sin descargas.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Tipo</Label>
+                      <Select value={form.game_type} onValueChange={(v) => setForm({ ...form, game_type: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="iframe">HTML5 / iframe</SelectItem>
+                          <SelectItem value="unity">Unity WebGL</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Categoría</Label>
+                      <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
+                        <SelectTrigger><SelectValue placeholder="Selecciona..." /></SelectTrigger>
+                        <SelectContent>
+                          {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div><Label>Tags (separados por coma)</Label><Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="multijugador, rápido, 2D" /></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Etiqueta destacada</Label>
+                      <Select value={form.badge_type} onValueChange={(v) => setForm({ ...form, badge_type: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Sin etiqueta</SelectItem>
+                          <SelectItem value="new">Nuevo</SelectItem>
+                          <SelectItem value="trending">Trending</SelectItem>
+                          <SelectItem value="update">Actualizado</SelectItem>
+                          <SelectItem value="hot">Hot</SelectItem>
+                          <SelectItem value="hoy">Hoy</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Duración (días)</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={30}
+                        value={form.badge_days}
+                        disabled={form.badge_type === "none"}
+                        onChange={(e) => setForm({ ...form, badge_days: Math.max(1, Number(e.target.value) || 3) })}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-6 pt-2">
+                    <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />Activo</label>
+                    <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_featured} onCheckedChange={(v) => setForm({ ...form, is_featured: v })} />Destacado</label>
+                    <label className="flex items-center gap-2 text-sm"><Switch checked={form.is_trending} onCheckedChange={(v) => setForm({ ...form, is_trending: v })} />Trending</label>
+                  </div>
+                  <Button type="submit" className="w-full bg-gradient-primary text-primary-foreground">{form.id ? "Guardar cambios" : "Crear juego"}</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="rounded-xl border border-border/60 bg-surface overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-surface-elevated text-xs uppercase tracking-wider text-muted-foreground">
+                <tr><th className="text-left p-3">Título</th><th className="text-left p-3 hidden md:table-cell">Slug</th><th className="text-left p-3 hidden lg:table-cell">Vistas</th><th className="text-left p-3">Estado</th><th className="p-3"></th></tr>
+              </thead>
+              <tbody>
+                {games.map((g) => (
+                  <tr key={g.id} className="border-t border-border/60">
+                    <td className="p-3 font-medium">{g.title}</td>
+                    <td className="p-3 hidden md:table-cell text-muted-foreground">{g.slug}</td>
+                    <td className="p-3 hidden lg:table-cell text-muted-foreground">{g.views_count}</td>
+                    <td className="p-3">
+                      <span className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-bold ${g.is_active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                        {g.is_active ? "Activo" : "Inactivo"}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      <Button variant="ghost" size="icon" onClick={() => edit(g)}><Pencil className="size-4" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => remove(g.id)}><Trash2 className="size-4 text-destructive" /></Button>
+                    </td>
+                  </tr>
+                ))}
+                {games.length === 0 && (
+                  <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">Aún no hay juegos. Crea el primero.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="logo">
+          <LogoSettingsPanel />
+        </TabsContent>
+      </Tabs>
     </AppLayout>
+  );
+}
+
+function LogoSettingsPanel() {
+  const current = useSiteSettings();
+  const [url, setUrl] = useState(current.logo_url);
+  const [size, setSize] = useState(current.logo_size);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setUrl(current.logo_url); setSize(current.logo_size); }, [current.logo_url, current.logo_size]);
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert({ id: 1, logo_url: url, logo_size: size, updated_at: new Date().toISOString() });
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Logo actualizado");
+    window.dispatchEvent(new Event("site-settings:updated"));
+  };
+
+  const onFile = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => setUrl(String(reader.result));
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="max-w-2xl">
+      <div className="rounded-xl border border-border/60 bg-surface p-6">
+        <h2 className="text-lg font-display font-semibold mb-1">Configuración del logo</h2>
+        <p className="text-sm text-muted-foreground mb-6">Cambia el logo que aparece en la barra superior y ajusta su tamaño.</p>
+
+        <div className="flex items-center gap-6 mb-6 p-4 rounded-lg bg-background border border-border/60">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Vista previa</span>
+          {url ? (
+            <img
+              src={url}
+              alt="logo preview"
+              style={{ width: size, height: size }}
+              className="rounded-full object-cover"
+            />
+          ) : (
+            <div className="size-9 rounded-full bg-muted" />
+          )}
+          <span className="text-sm text-muted-foreground ml-auto">{size}px</span>
+        </div>
+
+        <form onSubmit={save} className="space-y-4">
+          <div>
+            <Label>URL del logo</Label>
+            <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://... o data URI" />
+          </div>
+          <div>
+            <Label>Subir desde el ordenador</Label>
+            <Input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) void onFile(f); }} />
+            <p className="text-[11px] text-muted-foreground mt-1">Se almacena embebido (data URI). Para producción usa una URL pública.</p>
+          </div>
+          <div>
+            <Label>Tamaño ({size}px)</Label>
+            <Input
+              type="range"
+              min={20}
+              max={120}
+              value={size}
+              onChange={(e) => setSize(Number(e.target.value))}
+            />
+          </div>
+          <Button type="submit" disabled={saving} className="w-full bg-gradient-primary text-primary-foreground">
+            {saving ? "Guardando..." : "Guardar cambios"}
+          </Button>
+        </form>
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Search, User as UserIcon, LogOut, Bookmark, History, Shield } from "lucide-react";
-import logoAsset from "@/assets/logo.png.asset.json";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ export function Navbar() {
   const search = useRouterState({ select: (r) => r.location.search as { q?: string } });
   const [q, setQ] = useState(search.q ?? "");
   const { user, isAdmin } = useAuth();
+  const siteSettings = useSiteSettings();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,10 +59,12 @@ export function Navbar() {
         <div className="flex items-center gap-3 lg:gap-8">
           <Link to="/" className="flex items-center gap-2 group">
             <img
-              src={logoAsset.url}
+              src={siteSettings.logo_url}
               alt="Cernadas Games"
-              className="size-9 rounded-full object-cover transition-transform group-hover:scale-105"
+              style={{ width: siteSettings.logo_size, height: siteSettings.logo_size }}
+              className="rounded-full object-cover transition-transform group-hover:scale-105 shrink-0"
             />
+
 
             <span className="font-display text-xl font-bold tracking-tight hidden sm:inline">
               <span className="text-gradient">CERNADAS</span>{" "}
