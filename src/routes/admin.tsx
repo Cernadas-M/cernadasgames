@@ -249,17 +249,28 @@ function LogoSettingsPanel() {
 
   const save = async (e: FormEvent) => {
     e.preventDefault();
+    if (!url.trim()) return toast.error("Introduce una URL o sube un archivo");
     setSaving(true);
     const { error } = await supabase
       .from("site_settings")
-      .upsert({ id: 1, logo_url: url, logo_size: size, updated_at: new Date().toISOString() });
+      .upsert(
+        { id: 1, logo_url: url, logo_size: size, updated_at: new Date().toISOString() },
+        { onConflict: "id" },
+      );
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      console.error("site_settings upsert error", error);
+      return toast.error(error.message);
+    }
     toast.success("Logo actualizado");
     window.dispatchEvent(new Event("site-settings:updated"));
   };
 
   const onFile = async (file: File) => {
+    if (file.size > 500 * 1024) {
+      toast.error("La imagen es demasiado grande (máx 500 KB). Usa una URL pública.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => setUrl(String(reader.result));
     reader.readAsDataURL(file);
