@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Pencil, Trash2, Plus, Shield } from "lucide-react";
+import { Pencil, Trash2, Plus, Shield, ArrowUp, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/app-layout";
@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import type { Category, Game } from "@/lib/types";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { CATEGORY_ICONS, getCategoryIcon } from "@/lib/categories";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
