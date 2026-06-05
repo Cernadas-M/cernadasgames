@@ -115,6 +115,7 @@ ON CONFLICT DO NOTHING;`}
       <Tabs defaultValue="games" className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="games">Juegos</TabsTrigger>
+          <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="logo">Logo</TabsTrigger>
         </TabsList>
 
