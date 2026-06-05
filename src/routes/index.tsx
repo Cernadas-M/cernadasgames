@@ -21,10 +21,11 @@ function Index() {
 
   useEffect(() => {
     void (async () => {
+      const nowIso = new Date().toISOString();
       const [f, t, n, a] = await Promise.all([
         supabase.from("games").select("*").eq("is_active", true).eq("is_featured", true).limit(1).maybeSingle(),
-        supabase.from("games").select("*").eq("is_active", true).eq("is_trending", true).order("views_count", { ascending: false }).limit(10),
-        supabase.from("games").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(10),
+        supabase.from("games").select("*").eq("is_active", true).eq("badge_type", "trending").or(`badge_expires_at.is.null,badge_expires_at.gt.${nowIso}`).order("views_count", { ascending: false }).limit(10),
+        supabase.from("games").select("*").eq("is_active", true).eq("badge_type", "new").or(`badge_expires_at.is.null,badge_expires_at.gt.${nowIso}`).order("created_at", { ascending: false }).limit(10),
         supabase.from("games").select("*").eq("is_active", true).order("views_count", { ascending: false }).limit(26),
       ]);
       setFeatured((f.data as Game | null) ?? null);
