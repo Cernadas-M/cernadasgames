@@ -10,7 +10,8 @@ export const Route = createFileRoute("/new")({ component: NewPage });
 function NewPage() {
   const [games, setGames] = useState<Game[]>([]);
   useEffect(() => {
-    void supabase.from("games").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(60)
+    const nowIso = new Date().toISOString();
+    void supabase.from("games").select("*").eq("is_active", true).eq("badge_type", "new").or(`badge_expires_at.is.null,badge_expires_at.gt.${nowIso}`).order("created_at", { ascending: false }).limit(60)
       .then(({ data }) => setGames((data ?? []) as Game[]));
   }, []);
   return (
