@@ -16,7 +16,8 @@ function Index() {
   const [featured, setFeatured] = useState<Game | null>(null);
   const [trending, setTrending] = useState<Game[]>([]);
   const [newest, setNewest] = useState<Game[]>([]);
-  const [all, setAll] = useState<Game[]>([]);
+  const [allPreview, setAllPreview] = useState<Game[]>([]);
+  const [hasMoreAll, setHasMoreAll] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -24,12 +25,14 @@ function Index() {
         supabase.from("games").select("*").eq("is_active", true).eq("is_featured", true).limit(1).maybeSingle(),
         supabase.from("games").select("*").eq("is_active", true).eq("is_trending", true).order("views_count", { ascending: false }).limit(10),
         supabase.from("games").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(10),
-        supabase.from("games").select("*").eq("is_active", true).order("views_count", { ascending: false }).limit(24),
+        supabase.from("games").select("*").eq("is_active", true).order("views_count", { ascending: false }).limit(26),
       ]);
       setFeatured((f.data as Game | null) ?? null);
       setTrending((t.data ?? []) as Game[]);
       setNewest((n.data ?? []) as Game[]);
-      setAll((a.data ?? []) as Game[]);
+      const allData = (a.data ?? []) as Game[];
+      setHasMoreAll(allData.length > 25);
+      setAllPreview(allData.slice(0, 25));
     })();
   }, []);
 
@@ -82,9 +85,9 @@ function Index() {
       )}
 
       <section className="mb-12">
-        <SectionHeader title="Todos los juegos" />
-        {all.length > 0 ? (
-          <GameGrid games={all} dense />
+        <SectionHeader title="Todos los juegos" action={hasMoreAll ? <Link to="/all" className="text-xs font-semibold text-primary hover:underline uppercase tracking-wider">Ver todos</Link> : undefined} />
+        {allPreview.length > 0 ? (
+          <GameGrid games={allPreview} dense />
         ) : (
           <div className="rounded-xl border border-dashed border-border p-12 text-center">
             <Flame className="size-8 text-muted-foreground mx-auto mb-3" />
