@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Pencil, Trash2, Plus, Shield } from "lucide-react";
+import { Pencil, Trash2, Plus, Shield, ArrowUp, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/app-layout";
@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import type { Category, Game } from "@/lib/types";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { CATEGORY_ICONS, getCategoryIcon } from "@/lib/categories";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -114,6 +115,7 @@ ON CONFLICT DO NOTHING;`}
       <Tabs defaultValue="games" className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="games">Juegos</TabsTrigger>
+          <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="logo">Logo</TabsTrigger>
         </TabsList>
 
@@ -231,6 +233,10 @@ ON CONFLICT DO NOTHING;`}
           </div>
         </TabsContent>
 
+        <TabsContent value="categories">
+          <CategoriesPanel />
+        </TabsContent>
+
         <TabsContent value="logo">
           <LogoSettingsPanel />
         </TabsContent>
@@ -321,6 +327,144 @@ function LogoSettingsPanel() {
             {saving ? "Guardando..." : "Guardar cambios"}
           </Button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function CategoriesPanel() {
+  const [cats, setCats] = useState<Category[]>([]);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ id: "", slug: "", name: "", icon: "Gamepad2", sort_order: 0 });
+  const iconNames = Object.keys(CATEGORY_ICONS);
+
+  const load = async () => {
+    const { data } = await supabase.from("categories").select("*").order("sort_order");
+    setCats((data ?? []) as Category[]);
+  };
+  useEffect(() => { void load(); }, []);
+
+  const reset = () => setForm({ id: "", slug: "", name: "", icon: "Gamepad2", sort_order: cats.length });
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!form.slug.trim() || !form.name.trim()) return toast.error("Slug y nombre son obligatorios");
+    const payload = { slug: form.slug, name: form.name, icon: form.icon, sort_order: form.sort_order };
+    const { error } = form.id
+      ? await supabase.from("categories").update(payload).eq("id", form.id)
+      : await supabase.from("categories").insert(payload);
+    if (error) return toast.error(error.message);
+    toast.success(form.id ? "Categoría actualizada" : "Categoría creada");
+    setOpen(false); reset(); void load();
+  };
+
+  const edit = (c: Category) => {
+    setForm({ id: c.id, slug: c.slug, name: c.name, icon: c.icon ?? "Gamepad2", sort_order: c.sort_order });
+    setOpen(true);
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("¿Eliminar esta categoría? Los juegos quedarán sin categoría.")) return;
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Eliminada"); void load();
+  };
+
+  const move = async (c: Category, dir: -1 | 1) => {
+    const idx = cats.findIndex((x) => x.id === c.id);
+    const swap = cats[idx + dir];
+    if (!swap) return;
+    const { error } = await supabase.from("categories").upsert([
+      { ...c, sort_order: swap.sort_order },
+      { ...swap, sort_order: c.sort_order },
+    ]);
+    if (error) return toast.error(error.message);
+    void load();
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">{cats.length} categoría(s)</p>
+        <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset(); }}>
+          <DialogTrigger asChild>
+            <Button onClick={reset} className="bg-gradient-primary text-primary-foreground">
+              <Plus className="size-4 mr-1" />Nueva categoría
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader><DialogTitle>{form.id ? "Editar categoría" : "Nueva categoría"}</DialogTitle></DialogHeader>
+            <form onSubmit={submit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Nombre *</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+                <div><Label>Slug *</Label><Input required value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="accion" /></div>
+              </div>
+              <div>
+                <Label>Icono</Label>
+                <Select value={form.icon} onValueChange={(v) => setForm({ ...form, icon: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {iconNames.map((n) => {
+                      const Icon = getCategoryIcon(n);
+                      return (
+                        <SelectItem key={n} value={n}>
+                          <span className="inline-flex items-center gap-2"><Icon className="size-4" />{n}</span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Orden</Label>
+                <Input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) || 0 })} />
+              </div>
+              <Button type="submit" className="w-full bg-gradient-primary text-primary-foreground">
+                {form.id ? "Guardar cambios" : "Crear categoría"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="rounded-xl border border-border/60 bg-surface overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-surface-elevated text-xs uppercase tracking-wider text-muted-foreground">
+            <tr>
+              <th className="text-left p-3">Orden</th>
+              <th className="text-left p-3">Icono</th>
+              <th className="text-left p-3">Nombre</th>
+              <th className="text-left p-3 hidden md:table-cell">Slug</th>
+              <th className="p-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {cats.map((c, i) => {
+              const Icon = getCategoryIcon(c.icon);
+              return (
+                <tr key={c.id} className="border-t border-border/60">
+                  <td className="p-3 text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <span className="w-6">{c.sort_order}</span>
+                      <Button variant="ghost" size="icon" disabled={i === 0} onClick={() => move(c, -1)}><ArrowUp className="size-3" /></Button>
+                      <Button variant="ghost" size="icon" disabled={i === cats.length - 1} onClick={() => move(c, 1)}><ArrowDown className="size-3" /></Button>
+                    </div>
+                  </td>
+                  <td className="p-3"><Icon className="size-4" /></td>
+                  <td className="p-3 font-medium">{c.name}</td>
+                  <td className="p-3 hidden md:table-cell text-muted-foreground">{c.slug}</td>
+                  <td className="p-3 text-right">
+                    <Button variant="ghost" size="icon" onClick={() => edit(c)}><Pencil className="size-4" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => remove(c.id)}><Trash2 className="size-4 text-destructive" /></Button>
+                  </td>
+                </tr>
+              );
+            })}
+            {cats.length === 0 && (
+              <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">Sin categorías.</td></tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
