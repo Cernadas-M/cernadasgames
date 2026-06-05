@@ -233,6 +233,10 @@ ON CONFLICT DO NOTHING;`}
           </div>
         </TabsContent>
 
+        <TabsContent value="categories">
+          <CategoriesPanel />
+        </TabsContent>
+
         <TabsContent value="logo">
           <LogoSettingsPanel />
         </TabsContent>
