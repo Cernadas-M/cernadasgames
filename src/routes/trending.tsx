@@ -10,7 +10,8 @@ export const Route = createFileRoute("/trending")({ component: TrendingPage });
 function TrendingPage() {
   const [games, setGames] = useState<Game[]>([]);
   useEffect(() => {
-    void supabase.from("games").select("*").eq("is_active", true).eq("is_trending", true).order("views_count", { ascending: false })
+    const nowIso = new Date().toISOString();
+    void supabase.from("games").select("*").eq("is_active", true).eq("badge_type", "trending").or(`badge_expires_at.is.null,badge_expires_at.gt.${nowIso}`).order("views_count", { ascending: false })
       .then(({ data }) => setGames((data ?? []) as Game[]));
   }, []);
   return (
