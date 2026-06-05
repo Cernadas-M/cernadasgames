@@ -85,9 +85,9 @@ function Index() {
       )}
 
       <section className="mb-12">
-        <SectionHeader title="Todos los juegos" />
-        {all.length > 0 ? (
-          <GameGrid games={all} dense />
+        <SectionHeader title="Todos los juegos" action={hasMoreAll ? <Link to="/all" className="text-xs font-semibold text-primary hover:underline uppercase tracking-wider">Ver todos</Link> : undefined} />
+        {allPreview.length > 0 ? (
+          <GameGrid games={allPreview} dense />
         ) : (
           <div className="rounded-xl border border-dashed border-border p-12 text-center">
             <Flame className="size-8 text-muted-foreground mx-auto mb-3" />
