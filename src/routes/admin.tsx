@@ -33,6 +33,7 @@ function AdminPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState(empty);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkOpen, setBulkOpen] = useState(false);
