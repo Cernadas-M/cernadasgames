@@ -145,9 +145,20 @@ ON CONFLICT DO NOTHING;`}
 
         <TabsContent value="games">
           <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-            <p className="text-sm text-muted-foreground">
-              {games.length} juego(s){selected.size > 0 ? ` · ${selected.size} seleccionado(s)` : ""}
-            </p>
+            <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nombre o slug..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground shrink-0">
+                {games.length} juego(s){selected.size > 0 ? ` · ${selected.size} seleccionado(s)` : ""}
+              </p>
+            </div>
             <div className="flex gap-2">
               {selected.size > 0 && (
                 <>
