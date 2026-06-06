@@ -143,8 +143,31 @@ ON CONFLICT DO NOTHING;`}
         </TabsList>
 
         <TabsContent value="games">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">{games.length} juego(s) en total</p>
+          <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+            <p className="text-sm text-muted-foreground">
+              {games.length} juego(s){selected.size > 0 ? ` · ${selected.size} seleccionado(s)` : ""}
+            </p>
+            <div className="flex gap-2">
+              {selected.size > 0 && (
+                <>
+                  <Button variant="outline" onClick={() => setBulkOpen(true)}>
+                    <Pencil className="size-4 mr-1" />Editar {selected.size}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="text-destructive"
+                    onClick={async () => {
+                      if (!confirm(`¿Eliminar ${selected.size} juego(s)?`)) return;
+                      const { error } = await supabase.from("games").delete().in("id", Array.from(selected));
+                      if (error) return toast.error(error.message);
+                      toast.success("Eliminados"); void load();
+                    }}
+                  >
+                    <Trash2 className="size-4 mr-1" />Eliminar
+                  </Button>
+                </>
+              )}
+
             <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setForm(empty); }}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-primary text-primary-foreground"><Plus className="size-4 mr-1" />Nuevo juego</Button>
