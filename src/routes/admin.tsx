@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Pencil, Trash2, Plus, Shield, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, Plus, Shield, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/app-layout";
