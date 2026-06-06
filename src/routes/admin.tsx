@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Pencil, Trash2, Plus, Shield, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, Plus, Shield, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppLayout } from "@/components/app-layout";
@@ -33,6 +33,7 @@ function AdminPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState(empty);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -132,6 +133,9 @@ ON CONFLICT DO NOTHING;`}
     toast.success("Eliminado"); void load();
   };
 
+  const q = search.trim().toLowerCase();
+  const filtered = q ? games.filter((g) => g.title.toLowerCase().includes(q) || g.slug.toLowerCase().includes(q)) : games;
+
   return (
     <AppLayout>
       <h1 className="text-2xl font-display font-bold mb-6">Panel de administración</h1>
@@ -144,9 +148,20 @@ ON CONFLICT DO NOTHING;`}
 
         <TabsContent value="games">
           <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-            <p className="text-sm text-muted-foreground">
-              {games.length} juego(s){selected.size > 0 ? ` · ${selected.size} seleccionado(s)` : ""}
-            </p>
+            <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nombre o slug..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground shrink-0">
+                {games.length} juego(s){selected.size > 0 ? ` · ${selected.size} seleccionado(s)` : ""}
+              </p>
+            </div>
             <div className="flex gap-2">
               {selected.size > 0 && (
                 <>
@@ -270,7 +285,7 @@ ON CONFLICT DO NOTHING;`}
                 </tr>
               </thead>
               <tbody>
-                {games.map((g) => (
+                {filtered.map((g) => (
                   <tr key={g.id} className={`border-t border-border/60 ${selected.has(g.id) ? "bg-primary/5" : ""}`}>
                     <td className="p-3">
                       <input type="checkbox" checked={selected.has(g.id)} onChange={() => toggleOne(g.id)} />
@@ -289,8 +304,8 @@ ON CONFLICT DO NOTHING;`}
                     </td>
                   </tr>
                 ))}
-                {games.length === 0 && (
-                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Aún no hay juegos. Crea el primero.</td></tr>
+                {filtered.length === 0 && (
+                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">{q ? "No se encontraron juegos." : "Aún no hay juegos. Crea el primero."}</td></tr>
                 )}
               </tbody>
             </table>
