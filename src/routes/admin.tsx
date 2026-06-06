@@ -285,7 +285,7 @@ ON CONFLICT DO NOTHING;`}
                 </tr>
               </thead>
               <tbody>
-                {games.map((g) => (
+                {filtered.map((g) => (
                   <tr key={g.id} className={`border-t border-border/60 ${selected.has(g.id) ? "bg-primary/5" : ""}`}>
                     <td className="p-3">
                       <input type="checkbox" checked={selected.has(g.id)} onChange={() => toggleOne(g.id)} />
@@ -304,8 +304,8 @@ ON CONFLICT DO NOTHING;`}
                     </td>
                   </tr>
                 ))}
-                {games.length === 0 && (
-                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Aún no hay juegos. Crea el primero.</td></tr>
+                {filtered.length === 0 && (
+                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">{q ? "No se encontraron juegos." : "Aún no hay juegos. Crea el primero."}</td></tr>
                 )}
               </tbody>
             </table>
