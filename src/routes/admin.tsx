@@ -133,6 +133,9 @@ ON CONFLICT DO NOTHING;`}
     toast.success("Eliminado"); void load();
   };
 
+  const q = search.trim().toLowerCase();
+  const filtered = q ? games.filter((g) => g.title.toLowerCase().includes(q) || g.slug.toLowerCase().includes(q)) : games;
+
   return (
     <AppLayout>
       <h1 className="text-2xl font-display font-bold mb-6">Panel de administración</h1>
