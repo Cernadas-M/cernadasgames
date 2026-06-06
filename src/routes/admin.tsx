@@ -319,7 +319,7 @@ ON CONFLICT DO NOTHING;`}
                   if (bulk.is_featured !== "__keep__") payload.is_featured = bulk.is_featured === "true";
                   if (bulk.is_trending !== "__keep__") payload.is_trending = bulk.is_trending === "true";
                   if (Object.keys(payload).length === 0) return toast.error("No has cambiado nada");
-                  const { error } = await supabase.from("games").update(payload).in("id", Array.from(selected));
+                  const { error } = await supabase.from("games").update(payload as never).in("id", Array.from(selected));
                   if (error) return toast.error(error.message);
                   toast.success(`${selected.size} juego(s) actualizados`);
                   setBulkOpen(false);
