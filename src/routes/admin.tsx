@@ -247,16 +247,34 @@ ON CONFLICT DO NOTHING;`}
                 </form>
               </DialogContent>
             </Dialog>
+            </div>
           </div>
 
           <div className="rounded-xl border border-border/60 bg-surface overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-surface-elevated text-xs uppercase tracking-wider text-muted-foreground">
-                <tr><th className="text-left p-3">Título</th><th className="text-left p-3 hidden md:table-cell">Slug</th><th className="text-left p-3 hidden lg:table-cell">Vistas</th><th className="text-left p-3">Estado</th><th className="p-3"></th></tr>
+                <tr>
+                  <th className="p-3 w-10">
+                    <input
+                      type="checkbox"
+                      checked={games.length > 0 && selected.size === games.length}
+                      ref={(el) => { if (el) el.indeterminate = selected.size > 0 && selected.size < games.length; }}
+                      onChange={toggleAll}
+                    />
+                  </th>
+                  <th className="text-left p-3">Título</th>
+                  <th className="text-left p-3 hidden md:table-cell">Slug</th>
+                  <th className="text-left p-3 hidden lg:table-cell">Vistas</th>
+                  <th className="text-left p-3">Estado</th>
+                  <th className="p-3"></th>
+                </tr>
               </thead>
               <tbody>
                 {games.map((g) => (
-                  <tr key={g.id} className="border-t border-border/60">
+                  <tr key={g.id} className={`border-t border-border/60 ${selected.has(g.id) ? "bg-primary/5" : ""}`}>
+                    <td className="p-3">
+                      <input type="checkbox" checked={selected.has(g.id)} onChange={() => toggleOne(g.id)} />
+                    </td>
                     <td className="p-3 font-medium">{g.title}</td>
                     <td className="p-3 hidden md:table-cell text-muted-foreground">{g.slug}</td>
                     <td className="p-3 hidden lg:table-cell text-muted-foreground">{g.views_count}</td>
@@ -272,11 +290,97 @@ ON CONFLICT DO NOTHING;`}
                   </tr>
                 ))}
                 {games.length === 0 && (
-                  <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">Aún no hay juegos. Crea el primero.</td></tr>
+                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Aún no hay juegos. Crea el primero.</td></tr>
                 )}
               </tbody>
             </table>
           </div>
+
+          <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader><DialogTitle>Editar {selected.size} juego(s)</DialogTitle></DialogHeader>
+              <p className="text-xs text-muted-foreground -mt-2">Solo se actualizarán los campos que cambies. Deja "Mantener" para no modificar.</p>
+              <form
+                className="space-y-3"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const payload: Record<string, unknown> = {};
+                  if (bulk.category_id !== "__keep__") payload.category_id = bulk.category_id || null;
+                  if (bulk.badge_type !== "__keep__") {
+                    if (bulk.badge_type === "none") {
+                      payload.badge_type = null;
+                      payload.badge_expires_at = null;
+                    } else {
+                      payload.badge_type = bulk.badge_type;
+                      payload.badge_expires_at = new Date(Date.now() + bulk.badge_days * 86400000).toISOString();
+                    }
+                  }
+                  if (bulk.is_active !== "__keep__") payload.is_active = bulk.is_active === "true";
+                  if (bulk.is_featured !== "__keep__") payload.is_featured = bulk.is_featured === "true";
+                  if (bulk.is_trending !== "__keep__") payload.is_trending = bulk.is_trending === "true";
+                  if (Object.keys(payload).length === 0) return toast.error("No has cambiado nada");
+                  const { error } = await supabase.from("games").update(payload).in("id", Array.from(selected));
+                  if (error) return toast.error(error.message);
+                  toast.success(`${selected.size} juego(s) actualizados`);
+                  setBulkOpen(false);
+                  setBulk({ category_id: "__keep__", badge_type: "__keep__", badge_days: 3, is_active: "__keep__", is_featured: "__keep__", is_trending: "__keep__" });
+                  void load();
+                }}
+              >
+                <div>
+                  <Label>Categoría</Label>
+                  <Select value={bulk.category_id} onValueChange={(v) => setBulk({ ...bulk, category_id: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__keep__">Mantener</SelectItem>
+                      {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Etiqueta</Label>
+                    <Select value={bulk.badge_type} onValueChange={(v) => setBulk({ ...bulk, badge_type: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__keep__">Mantener</SelectItem>
+                        <SelectItem value="none">Sin etiqueta</SelectItem>
+                        <SelectItem value="new">Nuevo</SelectItem>
+                        <SelectItem value="trending">Trending</SelectItem>
+                        <SelectItem value="update">Actualizado</SelectItem>
+                        <SelectItem value="hot">Hot</SelectItem>
+                        <SelectItem value="hoy">Hoy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Duración (días)</Label>
+                    <Input
+                      type="number" min={1} max={30}
+                      value={bulk.badge_days}
+                      disabled={bulk.badge_type === "__keep__" || bulk.badge_type === "none"}
+                      onChange={(e) => setBulk({ ...bulk, badge_days: Math.max(1, Number(e.target.value) || 3) })}
+                    />
+                  </div>
+                </div>
+                {(["is_active", "is_featured", "is_trending"] as const).map((k) => (
+                  <div key={k}>
+                    <Label>{k === "is_active" ? "Activo" : k === "is_featured" ? "Destacado" : "Trending"}</Label>
+                    <Select value={bulk[k]} onValueChange={(v) => setBulk({ ...bulk, [k]: v as "__keep__" | "true" | "false" })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__keep__">Mantener</SelectItem>
+                        <SelectItem value="true">Sí</SelectItem>
+                        <SelectItem value="false">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+                <Button type="submit" className="w-full bg-gradient-primary text-primary-foreground">Aplicar cambios</Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+
         </TabsContent>
 
         <TabsContent value="categories">
