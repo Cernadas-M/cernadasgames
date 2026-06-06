@@ -34,6 +34,27 @@ function AdminPage() {
   const [cats, setCats] = useState<Category[]>([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulk, setBulk] = useState({
+    category_id: "__keep__",
+    badge_type: "__keep__",
+    badge_days: 3,
+    is_active: "__keep__" as "__keep__" | "true" | "false",
+    is_featured: "__keep__" as "__keep__" | "true" | "false",
+    is_trending: "__keep__" as "__keep__" | "true" | "false",
+  });
+
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const toggleAll = () => {
+    setSelected((prev) => prev.size === games.length ? new Set() : new Set(games.map((g) => g.id)));
+  };
 
   const load = async () => {
     const [g, c] = await Promise.all([
@@ -42,7 +63,9 @@ function AdminPage() {
     ]);
     setGames((g.data ?? []) as Game[]);
     setCats((c.data ?? []) as Category[]);
+    setSelected(new Set());
   };
+
 
   useEffect(() => { if (isAdmin) void load(); }, [isAdmin]);
 
