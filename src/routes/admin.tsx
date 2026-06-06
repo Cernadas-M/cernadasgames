@@ -304,7 +304,7 @@ ON CONFLICT DO NOTHING;`}
                 className="space-y-3"
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  const payload: Record<string, unknown> = {};
+                  const payload: Record<string, string | boolean | null> = {};
                   if (bulk.category_id !== "__keep__") payload.category_id = bulk.category_id || null;
                   if (bulk.badge_type !== "__keep__") {
                     if (bulk.badge_type === "none") {
