@@ -152,7 +152,31 @@ function GamePage() {
             </div>
           </button>
         )}
+
+        <AnimatePresence>
+          {showIntro && intro_logo_url && (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 z-20 bg-black grid place-items-center pointer-events-none"
+            >
+              <motion.img
+                src={intro_logo_url}
+                alt="Intro"
+                initial={{ scale: 0.6, opacity: 0, filter: "blur(12px)" }}
+                animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                exit={{ scale: 1.1, opacity: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="max-w-[60%] max-h-[60%] object-contain drop-shadow-[0_0_40px_oklch(0.78_0.18_195/40%)]"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
 
       <div className="flex flex-col md:flex-row md:items-start gap-6 mb-10">
         <div className="flex-1 min-w-0">
