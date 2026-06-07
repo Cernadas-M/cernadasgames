@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Heart, Bookmark, Eye, Maximize, Play, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import { AppLayout } from "@/components/app-layout";
 import { GameGrid, SectionHeader } from "@/components/game-grid";
 import { Button } from "@/components/ui/button";
