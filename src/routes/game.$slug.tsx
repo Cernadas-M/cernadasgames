@@ -57,6 +57,10 @@ function GamePage() {
 
   const startPlay = async () => {
     setPlaying(true);
+    if (intro_logo_url) {
+      setShowIntro(true);
+      window.setTimeout(() => setShowIntro(false), Math.max(500, intro_duration_ms));
+    }
     if (user && game) {
       const { data, error } = await supabase
         .from("play_history")
