@@ -145,6 +145,7 @@ ON CONFLICT DO NOTHING;`}
           <TabsTrigger value="games">Juegos</TabsTrigger>
           <TabsTrigger value="categories">Categorías</TabsTrigger>
           <TabsTrigger value="logo">Logo</TabsTrigger>
+          <TabsTrigger value="intro">Intro</TabsTrigger>
         </TabsList>
 
         <TabsContent value="games">
