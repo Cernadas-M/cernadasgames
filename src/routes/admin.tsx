@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import type { Category, Game } from "@/lib/types";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { CATEGORY_ICONS, getCategoryIcon } from "@/lib/categories";
+import { BADGE_LABELS } from "@/lib/badge";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
