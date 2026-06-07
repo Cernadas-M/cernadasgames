@@ -256,18 +256,24 @@ export type Database = {
       site_settings: {
         Row: {
           id: number
+          intro_duration_ms: number
+          intro_logo_url: string | null
           logo_size: number
           logo_url: string
           updated_at: string
         }
         Insert: {
           id?: number
+          intro_duration_ms?: number
+          intro_logo_url?: string | null
           logo_size?: number
           logo_url: string
           updated_at?: string
         }
         Update: {
           id?: number
+          intro_duration_ms?: number
+          intro_logo_url?: string | null
           logo_size?: number
           logo_url?: string
           updated_at?: string

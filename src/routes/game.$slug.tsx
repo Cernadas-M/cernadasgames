@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Heart, Bookmark, Eye, Maximize, Play, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 import { AppLayout } from "@/components/app-layout";
 import { GameGrid, SectionHeader } from "@/components/game-grid";
 import { Button } from "@/components/ui/button";
@@ -16,9 +18,11 @@ export const Route = createFileRoute("/game/$slug")({
 function GamePage() {
   const { slug } = Route.useParams();
   const { user, isAdmin } = useAuth();
+  const { intro_logo_url, intro_duration_ms } = useSiteSettings();
   const [game, setGame] = useState<Game | null>(null);
   const [related, setRelated] = useState<Game[]>([]);
   const [playing, setPlaying] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
   const [playHistoryId, setPlayHistoryId] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
   const [favorited, setFavorited] = useState(false);
@@ -53,6 +57,10 @@ function GamePage() {
 
   const startPlay = async () => {
     setPlaying(true);
+    if (intro_logo_url) {
+      setShowIntro(true);
+      window.setTimeout(() => setShowIntro(false), Math.max(500, intro_duration_ms));
+    }
     if (user && game) {
       const { data, error } = await supabase
         .from("play_history")
@@ -144,7 +152,31 @@ function GamePage() {
             </div>
           </button>
         )}
+
+        <AnimatePresence>
+          {showIntro && intro_logo_url && (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 z-20 bg-black grid place-items-center pointer-events-none"
+            >
+              <motion.img
+                src={intro_logo_url}
+                alt="Intro"
+                initial={{ scale: 0.6, opacity: 0, filter: "blur(12px)" }}
+                animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                exit={{ scale: 1.1, opacity: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="max-w-[60%] max-h-[60%] object-contain drop-shadow-[0_0_40px_oklch(0.78_0.18_195/40%)]"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
 
       <div className="flex flex-col md:flex-row md:items-start gap-6 mb-10">
         <div className="flex-1 min-w-0">
