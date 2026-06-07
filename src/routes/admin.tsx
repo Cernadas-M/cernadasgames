@@ -280,33 +280,41 @@ ON CONFLICT DO NOTHING;`}
                   </th>
                   <th className="text-left p-3">Título</th>
                   <th className="text-left p-3 hidden md:table-cell">Slug</th>
+                  <th className="text-left p-3 hidden lg:table-cell">Categoría</th>
+                  <th className="text-left p-3 hidden lg:table-cell">Tag</th>
                   <th className="text-left p-3 hidden lg:table-cell">Vistas</th>
                   <th className="text-left p-3">Estado</th>
                   <th className="p-3"></th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((g) => (
-                  <tr key={g.id} className={`border-t border-border/60 ${selected.has(g.id) ? "bg-primary/5" : ""}`}>
-                    <td className="p-3">
-                      <input type="checkbox" checked={selected.has(g.id)} onChange={() => toggleOne(g.id)} />
-                    </td>
-                    <td className="p-3 font-medium">{g.title}</td>
-                    <td className="p-3 hidden md:table-cell text-muted-foreground">{g.slug}</td>
-                    <td className="p-3 hidden lg:table-cell text-muted-foreground">{g.views_count}</td>
-                    <td className="p-3">
-                      <span className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-bold ${g.is_active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
-                        {g.is_active ? "Activo" : "Inactivo"}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right">
-                      <Button variant="ghost" size="icon" onClick={() => edit(g)}><Pencil className="size-4" /></Button>
-                      <Button variant="ghost" size="icon" onClick={() => remove(g.id)}><Trash2 className="size-4 text-destructive" /></Button>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((g) => {
+                  const category = cats.find((c) => c.id === g.category_id);
+                  const tagLabel = g.badge_type ? (BADGE_LABELS[g.badge_type as keyof typeof BADGE_LABELS]?.label ?? g.badge_type) : "—";
+                  return (
+                    <tr key={g.id} className={`border-t border-border/60 ${selected.has(g.id) ? "bg-primary/5" : ""}`}>
+                      <td className="p-3">
+                        <input type="checkbox" checked={selected.has(g.id)} onChange={() => toggleOne(g.id)} />
+                      </td>
+                      <td className="p-3 font-medium">{g.title}</td>
+                      <td className="p-3 hidden md:table-cell text-muted-foreground">{g.slug}</td>
+                      <td className="p-3 hidden lg:table-cell text-muted-foreground">{category?.name ?? "—"}</td>
+                      <td className="p-3 hidden lg:table-cell text-muted-foreground">{tagLabel}</td>
+                      <td className="p-3 hidden lg:table-cell text-muted-foreground">{g.views_count}</td>
+                      <td className="p-3">
+                        <span className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-bold ${g.is_active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                          {g.is_active ? "Activo" : "Inactivo"}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right">
+                        <Button variant="ghost" size="icon" onClick={() => edit(g)}><Pencil className="size-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => remove(g.id)}><Trash2 className="size-4 text-destructive" /></Button>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {filtered.length === 0 && (
-                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">{q ? "No se encontraron juegos." : "Aún no hay juegos. Crea el primero."}</td></tr>
+                  <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">{q ? "No se encontraron juegos." : "Aún no hay juegos. Crea el primero."}</td></tr>
                 )}
               </tbody>
             </table>
