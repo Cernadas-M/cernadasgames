@@ -441,7 +441,14 @@ function IntroSettingsPanel() {
     const { error } = await supabase
       .from("site_settings")
       .upsert(
-        { id: 1, intro_logo_url: url || null, intro_duration_ms: duration, updated_at: new Date().toISOString() },
+        {
+          id: 1,
+          logo_url: current.logo_url,
+          logo_size: current.logo_size,
+          intro_logo_url: url || null,
+          intro_duration_ms: duration,
+          updated_at: new Date().toISOString(),
+        },
         { onConflict: "id" },
       );
     setSaving(false);
