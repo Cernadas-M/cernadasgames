@@ -18,9 +18,11 @@ export const Route = createFileRoute("/game/$slug")({
 function GamePage() {
   const { slug } = Route.useParams();
   const { user, isAdmin } = useAuth();
+  const { intro_logo_url, intro_duration_ms } = useSiteSettings();
   const [game, setGame] = useState<Game | null>(null);
   const [related, setRelated] = useState<Game[]>([]);
   const [playing, setPlaying] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
   const [playHistoryId, setPlayHistoryId] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
   const [favorited, setFavorited] = useState(false);
