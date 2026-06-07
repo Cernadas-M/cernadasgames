@@ -415,8 +415,106 @@ ON CONFLICT DO NOTHING;`}
         <TabsContent value="logo">
           <LogoSettingsPanel />
         </TabsContent>
+
+        <TabsContent value="intro">
+          <IntroSettingsPanel />
+        </TabsContent>
       </Tabs>
     </AppLayout>
+  );
+}
+
+function IntroSettingsPanel() {
+  const current = useSiteSettings();
+  const [url, setUrl] = useState(current.intro_logo_url);
+  const [duration, setDuration] = useState(current.intro_duration_ms);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setUrl(current.intro_logo_url);
+    setDuration(current.intro_duration_ms);
+  }, [current.intro_logo_url, current.intro_duration_ms]);
+
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert(
+        { id: 1, intro_logo_url: url || null, intro_duration_ms: duration, updated_at: new Date().toISOString() },
+        { onConflict: "id" },
+      );
+    setSaving(false);
+    if (error) {
+      console.error("intro upsert error", error);
+      return toast.error(error.message);
+    }
+    toast.success("Intro actualizado");
+    window.dispatchEvent(new Event("site-settings:updated"));
+  };
+
+  const onFile = async (file: File) => {
+    if (file.size > 800 * 1024) {
+      toast.error("La imagen es demasiado grande (máx 800 KB). Usa una URL pública.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setUrl(String(reader.result));
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="max-w-2xl">
+      <div className="rounded-xl border border-border/60 bg-surface p-6">
+        <h2 className="text-lg font-display font-semibold mb-1">Logo de intro al jugar</h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Este logo aparece con una transición sobre la pantalla del juego justo al pulsar Jugar. El juego se carga por detrás
+          mientras se muestra. Déjalo vacío para desactivar la intro.
+        </p>
+
+        <div className="flex items-center justify-center gap-6 mb-6 p-6 rounded-lg bg-black border border-border/60 min-h-[160px]">
+          {url ? (
+            <img src={url} alt="intro preview" className="max-h-32 max-w-[80%] object-contain" />
+          ) : (
+            <span className="text-sm text-muted-foreground">Sin intro configurada</span>
+          )}
+        </div>
+
+        <form onSubmit={save} className="space-y-4">
+          <div>
+            <Label>URL del logo de intro</Label>
+            <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://... o data URI" />
+          </div>
+          <div>
+            <Label>Subir desde el ordenador</Label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) void onFile(f); }}
+            />
+          </div>
+          <div>
+            <Label>Duración ({(duration / 1000).toFixed(1)} s)</Label>
+            <Input
+              type="range"
+              min={800}
+              max={6000}
+              step={100}
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+            />
+          </div>
+          {url && (
+            <Button type="button" variant="outline" className="w-full" onClick={() => setUrl("")}>
+              Quitar logo de intro
+            </Button>
+          )}
+          <Button type="submit" disabled={saving} className="w-full bg-gradient-primary text-primary-foreground">
+            {saving ? "Guardando..." : "Guardar cambios"}
+          </Button>
+        </form>
+      </div>
+    </div>
   );
 }
 
