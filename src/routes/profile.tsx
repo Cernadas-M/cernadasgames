@@ -59,7 +59,7 @@ function ProfilePage() {
       <AppLayout>
         <div className="py-12 text-center">
           <p className="text-muted-foreground mb-4">Inicia sesión para ver tu perfil.</p>
-          <Button asChild><Link to="/auth">Iniciar sesión</Link></Button>
+          <Button asChild><Link to="/auth" search={{ mode: "login" }}>Iniciar sesión</Link></Button>
         </div>
       </AppLayout>
     );

@@ -161,7 +161,7 @@ function HistoryPage() {
             Inicia sesión para ver tu historial.
           </p>
           <Button asChild>
-            <Link to="/auth">Iniciar sesión</Link>
+            <Link to="/auth" search={{ mode: "login" }}>Iniciar sesión</Link>
           </Button>
         </div>
       ) : loaded && entries.length === 0 ? (
