@@ -127,7 +127,7 @@ export function Navbar() {
           ) : (
             <>
               <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
-                <Link to="/auth">Entrar</Link>
+                <Link to="/auth" search={{ mode: "login" }}>Entrar</Link>
               </Button>
               <Button size="sm" asChild className="bg-gradient-primary text-primary-foreground hover:opacity-90 glow-primary">
                 <Link to="/auth" search={{ mode: "signup" }}>Registrarse</Link>
