@@ -1,11 +1,11 @@
-# Corregir la presentación de los logos
+# Corregir la presentación de la marca
 
 ## Cambios
-- Mostrar el logo expandido de Ozyron como marca principal en la barra superior, con un tamaño legible y sin el recuadro oscuro visible.
-- Usar el logo circular solo como icono compacto en móvil y como favicon.
-- Mostrar únicamente el logo expandido, más grande y limpio, sobre el formulario de acceso y registro.
+- Sustituir la imagen del logo expandido por el texto **OZYRON**, con una tipografía gaming clara y bien proporcionada.
+- Mostrar ese texto en la barra superior y sobre el formulario de acceso y registro.
+- Reservar el logo circular para el icono compacto de la marca y el favicon.
 - Mantener intactos el catálogo, las funciones y el resto del diseño.
 
 ## Verificación
 - Comprobar la portada y la página de acceso en escritorio y móvil.
-- Confirmar que los logos mantienen sus proporciones, no se recortan y no desplazan otros elementos.
+- Confirmar que el nombre sea nítido, mantenga su proporción y no desplace otros elementos.
