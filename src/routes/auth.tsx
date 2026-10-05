@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { Gamepad2 } from "lucide-react";
+import logoAsset from "@/assets/ozyron-logo.png.asset.json";
+import wordmarkAsset from "@/assets/ozyron-wordmark.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,11 +52,9 @@ function AuthPage() {
   return (
     <div className="min-h-screen grid place-items-center px-4 py-12">
       <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="size-10 rounded-lg bg-gradient-primary grid place-items-center glow-primary">
-            <Gamepad2 className="size-6 text-primary-foreground" />
-          </div>
-          <span className="font-display text-2xl font-bold"><span className="text-gradient">CERNADAS</span> <span className="text-foreground/90">GAMES</span></span>
+        <Link to="/" className="flex items-center gap-3 justify-center mb-8">
+          <img src={logoAsset.url} alt="Ozyron Games" className="size-12 rounded-full object-cover" />
+          <img src={wordmarkAsset.url} alt="OZYRON" className="h-8 w-auto object-contain" />
         </Link>
 
         <div className="bg-surface border border-border/60 rounded-2xl p-6 md:p-8">

@@ -103,7 +103,7 @@ function Index() {
           </span>
 
           <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight mb-3 text-balance">
-            {featured?.title ?? "Bienvenido a Cernadas Games"}
+            {featured?.title ?? "Bienvenido a Ozyron Games"}
           </h1>
 
           <p className="text-sm md:text-base text-muted-foreground mb-5 max-w-lg line-clamp-2">
