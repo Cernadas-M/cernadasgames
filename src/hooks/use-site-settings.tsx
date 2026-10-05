@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logoAsset from "@/assets/ozyron-logo.png.asset.json";
 
 export interface SiteSettings {
   logo_url: string;

@@ -8,7 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { ThemeProvider } from "@/hooks/use-theme";
-import logoAsset from "@/assets/logo.png.asset.json";
+import wordmarkAsset from "@/assets/ozyron-wordmark.png.asset.json";
 
 import appCss from "../styles.css?url";
 
@@ -74,21 +74,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cernadas Games — Juega miles de juegos online gratis" },
+      { title: "Ozyron Games — Juega miles de juegos online gratis" },
       { name: "description", content: "Plataforma de juegos HTML5 y Unity WebGL: acción, carreras, terror, puzzle, shooter y más. Juega gratis en tu navegador." },
       { name: "theme-color", content: "#0e1118" },
-      { property: "og:title", content: "Cernadas Games — Juega miles de juegos online gratis" },
+      { property: "og:title", content: "Ozyron Games — Juega miles de juegos online gratis" },
       { property: "og:description", content: "Plataforma de juegos HTML5 y Unity WebGL: acción, carreras, terror, puzzle, shooter y más. Juega gratis en tu navegador." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Cernadas Games — Juega miles de juegos online gratis" },
+      { name: "twitter:title", content: "Ozyron Games — Juega miles de juegos online gratis" },
       { name: "twitter:description", content: "Plataforma de juegos HTML5 y Unity WebGL: acción, carreras, terror, puzzle, shooter y más. Juega gratis en tu navegador." },
-      { property: "og:image", content: logoAsset.url },
-      { name: "twitter:image", content: logoAsset.url },
+      { property: "og:image", content: wordmarkAsset.url },
+      { name: "twitter:image", content: wordmarkAsset.url },
     ],
     links: [
-      { rel: "icon", type: "image/png", href: logoAsset.url },
-      { rel: "apple-touch-icon", href: logoAsset.url },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "apple-touch-icon", href: "/favicon.png" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },

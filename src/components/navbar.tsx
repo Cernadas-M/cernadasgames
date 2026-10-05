@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import wordmarkAsset from "@/assets/ozyron-wordmark.png.asset.json";
 import { Search, User as UserIcon, LogOut, Bookmark, History, Shield } from "lucide-react";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useEffect, useState, type FormEvent } from "react";
@@ -57,19 +58,18 @@ export function Navbar() {
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/75 backdrop-blur-xl border-b border-border/60">
       <div className="h-full px-4 lg:px-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 lg:gap-8">
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-2.5 group">
             <img
               src={siteSettings.logo_url}
-              alt="Cernadas Games"
+              alt="Ozyron Games"
               style={{ width: siteSettings.logo_size, height: siteSettings.logo_size }}
               className="rounded-full object-cover transition-transform group-hover:scale-105 shrink-0"
             />
-
-
-            <span className="font-display text-xl font-bold tracking-tight hidden sm:inline">
-              <span className="text-gradient">CERNADAS</span>{" "}
-              <span className="text-foreground/90">GAMES</span>
-            </span>
+            <img
+              src={wordmarkAsset.url}
+              alt="OZYRON"
+              className="h-6 w-auto object-contain hidden sm:inline transition-transform group-hover:scale-105"
+            />
           </Link>
 
           <form onSubmit={onSubmit} className="relative hidden md:block">

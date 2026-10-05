@@ -6,8 +6,8 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
   head: () => ({
     meta: [
-      { title: "Contacto · Cernadas Games" },
-      { name: "description", content: "Contacta con Cernadas Games: reporta un error, sugiere un nuevo juego u otra consulta." },
+      { title: "Contacto · Ozyron Games" },
+      { name: "description", content: "Contacta con Ozyron Games: reporta un error, sugiere un nuevo juego u otra consulta." },
     ],
   }),
 });
