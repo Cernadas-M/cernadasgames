@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { Gamepad2 } from "lucide-react";
+import logoAsset from "@/assets/ozyron-logo.png.asset.json";
+import wordmarkAsset from "@/assets/ozyron-wordmark.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
